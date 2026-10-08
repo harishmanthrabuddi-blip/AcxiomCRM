@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Edit User - AcxiomCRM{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center my-4">
+    <div class="col-lg-6">
+        <div class="card shadow-sm border-0 rounded-4 bg-white">
+            <div class="card-header bg-white border-0 pt-4 px-4">
+                <h4 class="fw-bold text-dark mb-0">Edit User: {{ user.name }}</h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" novalidate>
+                    {{ form.hidden_tag() }}
+
+                    <div class="mb-3">
+                        {{ form.name.label(class="form-label fw-semibold") }}
+                        {{ form.name(class="form-control" + (" is-invalid" if form.name.errors else "")) }}
+                        {% for error in form.name.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.email.label(class="form-label fw-semibold") }}
+                        {{ form.email(class="form-control" + (" is-invalid" if form.email.errors else "")) }}
+                        {% for error in form.email.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.role_id.label(class="form-label fw-semibold") }}
+                        {{ form.role_id(class="form-select") }}
+                    </div>
+
+                    <div class="mb-4 form-check">
+                        {{ form.is_active(class="form-check-input") }}
+                        {{ form.is_active.label(class="form-check-label fw-semibold") }}
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{{ url_for('admin.users_list') }}" class="btn btn-outline-secondary px-4">Cancel</a>
+                        {{ form.submit(class="btn btn-primary px-4 fw-bold") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

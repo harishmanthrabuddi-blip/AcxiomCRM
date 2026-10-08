@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Log Activity - AcxiomCRM{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center my-4">
+    <div class="col-lg-6">
+        <div class="card shadow-sm border-0 rounded-4 bg-white">
+            <div class="card-header bg-white border-0 pt-4 px-4">
+                <h4 class="fw-bold text-dark mb-0">Log CRM Activity</h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" action="{{ url_for('crm.activity_create') }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Activity Type</label>
+                        <select name="activity_type" class="form-select">
+                            <option value="Call">Call</option>
+                            <option value="Meeting">Meeting</option>
+                            <option value="Email">Email</option>
+                            <option value="Task">Task</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Subject</label>
+                        <input type="text" name="subject" class="form-control" placeholder="e.g. Discovery Call with Prospect" required>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold">Related Customer</label>
+                            <select name="customer_id" class="form-select">
+                                <option value="0">-- None --</option>
+                                {% for c in customers %}
+                                <option value="{{ c.id }}">{{ c.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold">Related Lead</label>
+                            <select name="lead_id" class="form-select">
+                                <option value="0">-- None --</option>
+                                {% for l in leads %}
+                                <option value="{{ l.id }}">{{ l.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Description / Notes</label>
+                        <textarea name="description" class="form-control" rows="3" placeholder="Key outcomes and discussion summary..."></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+                        <a href="{{ url_for('crm.activities_list') }}" class="btn btn-outline-secondary px-4">Cancel</a>
+                        <button type="submit" class="btn btn-primary px-4 fw-bold">Log Activity</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

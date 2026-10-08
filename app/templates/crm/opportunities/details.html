@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Opportunity Details - {{ opportunity.name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-between my-4">
+    <div>
+        <h2 class="fw-bold text-dark mb-1">{{ opportunity.name }}</h2>
+        <p class="text-muted mb-0">Owner: {{ opportunity.owner.name }} | Stage: <span class="badge bg-primary">{{ opportunity.stage }}</span></p>
+    </div>
+    <div>
+        <a href="{{ url_for('crm.opportunity_edit', id=opportunity.id) }}" class="btn btn-primary fw-bold me-2"><i class="bi bi-pencil me-1"></i> Edit Opportunity</a>
+        <a href="{{ url_for('crm.opportunities_list') }}" class="btn btn-outline-secondary">Back to List</a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm rounded-4 bg-white p-4">
+            <h5 class="fw-bold text-primary mb-3"><i class="bi bi-currency-dollar me-2"></i>Deal Metrics</h5>
+            <table class="table table-borderless">
+                <tr><th class="text-muted w-35">Deal Amount:</th><td class="fw-bold text-primary fs-5">${{ "{:,.2f}".format(opportunity.amount) }}</td></tr>
+                <tr><th class="text-muted">Win Probability:</th><td class="fw-semibold">{{ opportunity.probability }}%</td></tr>
+                <tr><th class="text-muted">Weighted Forecast:</th><td class="fw-bold text-success fs-5">${{ "{:,.2f}".format(opportunity.weighted_amount) }}</td></tr>
+                <tr><th class="text-muted">Expected Close Date:</th><td class="fw-semibold">{{ opportunity.expected_close_date.strftime('%Y-%m-%d') }}</td></tr>
+                <tr><th class="text-muted">Status:</th><td><span class="badge bg-dark">{{ opportunity.status }}</span></td></tr>
+                <tr><th class="text-muted">Customer:</th><td>{{ opportunity.customer.name if opportunity.customer else 'N/A' }}</td></tr>
+            </table>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm rounded-4 bg-white p-4">
+            <h5 class="fw-bold text-dark mb-3"><i class="bi bi-journal-text me-2 text-warning"></i>Deal Strategy Notes</h5>
+            <p class="text-secondary mb-0">{{ opportunity.notes or 'No strategy notes recorded.' }}</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

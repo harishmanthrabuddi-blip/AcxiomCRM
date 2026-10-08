@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - AcxiomCRM{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-between my-4">
+    <div>
+        <h2 class="fw-bold text-dark mb-1">Executive Dashboard</h2>
+        <p class="text-muted mb-0">Overview of CRM KPIs, Sales Pipeline, and Follow-ups</p>
+    </div>
+    <div>
+        <a href="{{ url_for('crm.customer_create') }}" class="btn btn-primary fw-bold me-2">
+            <i class="bi bi-person-plus-fill me-1"></i> New Customer
+        </a>
+        <a href="{{ url_for('crm.lead_create') }}" class="btn btn-outline-primary fw-bold">
+            <i class="bi bi-funnel-fill me-1"></i> New Lead
+        </a>
+    </div>
+</div>
+
+<!-- KPI Cards Grid -->
+<div class="row g-3 mb-4">
+    <div class="col-md-6 col-lg-3">
+        <div class="card border-0 shadow-sm rounded-4 bg-primary text-white h-100">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-white-50 text-uppercase fw-bold mb-1">Total Customers</h6>
+                        <h2 class="fw-bold mb-0">{{ kpis.total_customers }}</h2>
+                    </div>
+                    <div class="fs-1 text-white-50"><i class="bi bi-people-fill"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+        <div class="card border-0 shadow-sm rounded-4 bg-info text-white h-100">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-white-50 text-uppercase fw-bold mb-1">Open Leads</h6>
+                        <h2 class="fw-bold mb-0">{{ kpis.open_leads }} <small class="fs-6 text-white-50">/ {{ kpis.total_leads }}</small></h2>
+                    </div>
+                    <div class="fs-1 text-white-50"><i class="bi bi-funnel-fill"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+        <div class="card border-0 shadow-sm rounded-4 bg-warning text-dark h-100">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-dark-50 text-uppercase fw-bold mb-1">Open Opportunities</h6>
+                        <h2 class="fw-bold mb-0">{{ kpis.open_opportunities }} <small class="fs-6">/ {{ kpis.total_opportunities }}</small></h2>
+                    </div>
+                    <div class="fs-1 text-dark-50"><i class="bi bi-graph-up"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+        <div class="card border-0 shadow-sm rounded-4 bg-success text-white h-100">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-white-50 text-uppercase fw-bold mb-1">Total Pipeline Value</h6>
+                        <h2 class="fw-bold mb-0">${{ "{:,.2f}".format(kpis.total_pipeline_value) }}</h2>
+                    </div>
+                    <div class="fs-1 text-white-50"><i class="bi bi-currency-dollar"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row g-4 mb-4">
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm rounded-4 bg-white">
+            <div class="card-header bg-white border-0 pt-4 px-4">
+                <h5 class="fw-bold text-dark mb-0"><i class="bi bi-pie-chart-fill me-2 text-primary"></i>Lead Status Breakdown</h5>
+            </div>
+            <div class="card-body p-4" style="height: 320px;">
+                <canvas id="leadStatusChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm rounded-4 bg-white">
+            <div class="card-header bg-white border-0 pt-4 px-4">
+                <h5 class="fw-bold text-dark mb-0"><i class="bi bi-bar-chart-line-fill me-2 text-primary"></i>Opportunity Pipeline Amount ($)</h5>
+            </div>
+            <div class="card-body p-4" style="height: 320px;">
+                <canvas id="pipelineChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Upcoming Follow-Ups Table -->
+<div class="card border-0 shadow-sm rounded-4 bg-white">
+    <div class="card-header bg-white border-0 pt-4 px-4 d-flex align-items-center justify-content-between">
+        <h5 class="fw-bold text-dark mb-0"><i class="bi bi-calendar-event-fill me-2 text-primary"></i>Upcoming Planned Follow-Ups</h5>
+        <a href="{{ url_for('crm.followups_list') }}" class="btn btn-sm btn-outline-secondary">View All</a>
+    </div>
+    <div class="card-body p-4">
+        {% if upcoming_followups %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Date & Time</th>
+                        <th>Type</th>
+                        <th>Subject</th>
+                        <th>Related Entity</th>
+                        <th>Assigned User</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for f in upcoming_followups %}
+                    <tr>
+                        <td class="fw-semibold">{{ f.followup_date.strftime('%Y-%m-%d %H:%M') }}</td>
+                        <td><span class="badge bg-secondary">{{ f.followup_type }}</span></td>
+                        <td class="fw-bold text-dark">{{ f.subject }}</td>
+                        <td>
+                            {% if f.customer %}<span class="badge bg-primary">Cust: {{ f.customer.name }}</span>
+                            {% elif f.lead %}<span class="badge bg-info text-dark">Lead: {{ f.lead.name }}</span>
+                            {% else %}<span class="text-muted">N/A</span>{% endif %}
+                        </td>
+                        <td>{{ f.assigned_to.name }}</td>
+                        <td>
+                            <form method="POST" action="{{ url_for('crm.followup_complete', id=f.id) }}" class="d-inline">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="btn btn-sm btn-success fw-bold">Mark Complete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="text-muted text-center my-3">No pending follow-ups scheduled.</p>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Lead Status Chart
+        const ctxLead = document.getElementById('leadStatusChart').getContext('2d');
+        new Chart(ctxLead, {
+            type: 'doughnut',
+            data: {
+                labels: {{ charts.lead_statuses | tojson }},
+                datasets: [{
+                    data: {{ charts.lead_counts | tojson }},
+                    backgroundColor: ['#0d6efd', '#0dcaf0', '#ffc107', '#6c757d', '#198754', '#dc3545']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'right' }
+                }
+            }
+        });
+
+        // Pipeline Amount Chart
+        const ctxPipe = document.getElementById('pipelineChart').getContext('2d');
+        new Chart(ctxPipe, {
+            type: 'bar',
+            data: {
+                labels: {{ charts.pipeline_stages | tojson }},
+                datasets: [{
+                    label: 'Pipeline Amount ($)',
+                    data: {{ charts.pipeline_amounts | tojson }},
+                    backgroundColor: '#0d6efd',
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

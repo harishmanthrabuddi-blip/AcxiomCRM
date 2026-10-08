@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Opportunities - AcxiomCRM{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-between my-4">
+    <div>
+        <h2 class="fw-bold text-dark mb-1">Opportunity Management</h2>
+        <p class="text-muted mb-0">Sales pipeline tracking, deal stage management, and weighted forecasts</p>
+    </div>
+    <a href="{{ url_for('crm.opportunity_create') }}" class="btn btn-primary fw-bold shadow-sm">
+        <i class="bi bi-graph-up me-1"></i> Add Opportunity
+    </a>
+</div>
+
+<!-- Opportunities Table -->
+<div class="card border-0 shadow-sm rounded-4 bg-white">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">Opportunity Name</th>
+                        <th>Customer / Lead</th>
+                        <th>Stage</th>
+                        <th>Amount ($)</th>
+                        <th>Prob (%)</th>
+                        <th>Weighted Value</th>
+                        <th>Close Date</th>
+                        <th>Owner</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for o in opportunities %}
+                    <tr>
+                        <td class="ps-4 fw-bold text-dark">{{ o.name }}</td>
+                        <td>
+                            {% if o.customer %}<span class="badge bg-primary">Cust: {{ o.customer.name }}</span>
+                            {% elif o.lead %}<span class="badge bg-info text-dark">Lead: {{ o.lead.name }}</span>
+                            {% else %}<span class="text-muted">Unlinked</span>{% endif %}
+                        </td>
+                        <td>
+                            {% if o.stage == 'Won' %}<span class="badge bg-success">Won</span>
+                            {% elif o.stage == 'Lost' %}<span class="badge bg-danger">Lost</span>
+                            {% else %}<span class="badge bg-warning text-dark">{{ o.stage }}</span>{% endif %}
+                        </td>
+                        <td class="fw-bold text-primary">${{ "{:,.2f}".format(o.amount) }}</td>
+                        <td>{{ o.probability }}%</td>
+                        <td class="fw-bold text-dark">${{ "{:,.2f}".format(o.weighted_amount) }}</td>
+                        <td>{{ o.expected_close_date.strftime('%Y-%m-%d') }}</td>
+                        <td>{{ o.owner.name }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="8" class="text-center py-4 text-muted">No sales opportunities created yet.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

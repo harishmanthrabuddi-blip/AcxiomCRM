@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - AcxiomCRM{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center my-4">
+    <div class="col-lg-8">
+        <div class="card shadow-sm border-0 rounded-4 bg-white">
+            <div class="card-header bg-white border-0 pt-4 px-4">
+                <h4 class="fw-bold text-dark mb-0">{{ title }}</h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" novalidate>
+                    {{ form.hidden_tag() }}
+
+                    <div class="mb-3">
+                        {{ form.name.label(class="form-label fw-semibold") }}
+                        {{ form.name(class="form-control" + (" is-invalid" if form.name.errors else ""), placeholder="e.g. Enterprise License Contract") }}
+                        {% for error in form.name.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.customer_id.label(class="form-label fw-semibold") }}
+                            {{ form.customer_id(class="form-select") }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.lead_id.label(class="form-label fw-semibold") }}
+                            {{ form.lead_id(class="form-select") }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            {{ form.stage.label(class="form-label fw-semibold") }}
+                            {{ form.stage(class="form-select") }}
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            {{ form.amount.label(class="form-label fw-semibold") }}
+                            {{ form.amount(class="form-control" + (" is-invalid" if form.amount.errors else ""), placeholder="Must be > 0") }}
+                            {% for error in form.amount.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            {{ form.probability.label(class="form-label fw-semibold") }}
+                            {{ form.probability(class="form-control" + (" is-invalid" if form.probability.errors else ""), placeholder="0 - 100") }}
+                            {% for error in form.probability.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.expected_close_date.label(class="form-label fw-semibold") }}
+                            {{ form.expected_close_date(class="form-control" + (" is-invalid" if form.expected_close_date.errors else ""), type="date") }}
+                            {% for error in form.expected_close_date.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.owner_id.label(class="form-label fw-semibold") }}
+                            {{ form.owner_id(class="form-select" + (" is-invalid" if form.owner_id.errors else "")) }}
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.notes.label(class="form-label fw-semibold") }}
+                        {{ form.notes(class="form-control", rows=3, placeholder="Strategy and deal notes...") }}
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+                        <a href="{{ url_for('crm.opportunities_list') }}" class="btn btn-outline-secondary px-4">Cancel</a>
+                        {{ form.submit(class="btn btn-primary px-4 fw-bold") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

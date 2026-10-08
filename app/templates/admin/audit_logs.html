@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Audit Logs - AcxiomCRM{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-between my-4">
+    <div>
+        <h2 class="fw-bold text-dark mb-1">System Audit Logs</h2>
+        <p class="text-muted mb-0">Append-only audit trial of security events, CRUD operations, and role changes</p>
+    </div>
+</div>
+
+<!-- Audit Log Table -->
+<div class="card border-0 shadow-sm rounded-4 bg-white">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">Timestamp</th>
+                        <th>User</th>
+                        <th>Action</th>
+                        <th>Entity</th>
+                        <th>Record ID</th>
+                        <th>Old Value</th>
+                        <th>New Value</th>
+                        <th class="pe-4">IP Address</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in logs %}
+                    <tr>
+                        <td class="ps-4 text-muted small">{{ log.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                        <td class="fw-bold text-dark">{{ log.user.name if log.user else 'System/Anonymous' }}</td>
+                        <td><span class="badge bg-primary">{{ log.action }}</span></td>
+                        <td><span class="badge bg-secondary">{{ log.entity_name }}</span></td>
+                        <td>#{{ log.record_id or 'N/A' }}</td>
+                        <td class="text-muted small">{{ log.old_value or '-' }}</td>
+                        <td class="fw-semibold small">{{ log.new_value or '-' }}</td>
+                        <td class="pe-4 font-monospace small text-muted">{{ log.ip_address or '127.0.0.1' }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="8" class="text-center py-4 text-muted">No audit log entries recorded.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
